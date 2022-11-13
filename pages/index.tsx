@@ -98,7 +98,7 @@ export default function Home() {
     })
 
     try {
-      const response = await axios.post(API_URL, data)
+      const response = await axios.post(API_URL + '/api/bin', data)
       setData(response.data)
     } catch (error) {
       console.log(error)
@@ -342,6 +342,7 @@ export default function Home() {
         </div>
         <Container style={{ flexGrow: 1 }}>
           <Typography variant="h4">Title</Typography>
+          <p>{JSON.stringify(data)}</p>
         </Container>
       </div>
       <Modal
