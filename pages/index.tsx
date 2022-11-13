@@ -1,13 +1,108 @@
-import { Alert, Container, Box, IconButton, Modal, Card, Link } from '@mui/material'
+import {
+  Alert,
+  Container,
+  Box,
+  IconButton,
+  Modal,
+  Card,
+  Link,
+  ToggleButtonGroup,
+  ToggleButton,
+  FormControl,
+  FormLabel,
+  OutlinedInput,
+  Select,
+  MenuItem,
+  Button,
+} from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Head from 'next/head'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { useState } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 
 import classes from '@/styles/root.module.css'
+import produce from 'immer'
+
+interface BinaryForm {
+  config: {
+    epochs: number
+    left_limit: number
+    right_limit: number
+    amount: number
+    precision: number
+    fitness: string
+    type: 'min' | 'max'
+  }
+  selection_config: {
+    type: string
+    percentage: number
+    group_size?: number
+  }
+  crossover_config: {
+    type: string
+    probability: number
+  }
+  mutation_config: {
+    type: string
+    probability: number
+  }
+  inversion_config: {
+    probability: number
+  }
+}
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
+  const [representation, setRepresentation] = useState<'decimal' | 'binary'>('binary')
+  const { control, handleSubmit } = useForm<BinaryForm>({
+    defaultValues: {
+      config: {
+        epochs: 1,
+        left_limit: -10,
+        right_limit: 10,
+        amount: 100,
+        precision: 6,
+        fitness: 'SCHAFFER_N4',
+        type: 'min',
+      },
+      selection_config: {
+        type: 'THE_BEST',
+        percentage: 40,
+        group_size: 3,
+      },
+      crossover_config: {
+        type: 'HOMOGENEOUS',
+        probability: 30,
+      },
+      mutation_config: {
+        type: 'EDGE',
+        probability: 30,
+      },
+      inversion_config: {
+        probability: 20,
+      },
+    },
+  })
+
+  const onSubmit = handleSubmit(async (rawData) => {
+    const data = produce(rawData, (draft) => {
+      draft.crossover_config.probability = draft.crossover_config.probability / 100
+      draft.inversion_config.probability = draft.inversion_config.probability / 100
+      draft.selection_config.percentage = draft.selection_config.percentage / 100
+    })
+
+    try {
+      const response = await fetch('https://evolution-algorithm-azefgwr5tq-lz.a.run.app/api/bin', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+      console.log(json)
+    } catch (error) {
+      console.log(error)
+    }
+  })
 
   return (
     <>
@@ -23,6 +118,226 @@ export default function Home() {
             The application is part of the evolutionary computing course at the Cracow University of
             Technology
           </Alert>
+          <Box my="16px">
+            <ToggleButtonGroup
+              color="primary"
+              value={representation}
+              exclusive
+              onChange={(event: any) => setRepresentation(event.target.value)}
+            >
+              <ToggleButton value="binary" aria-label="binary representation">
+                binary
+              </ToggleButton>
+              <ToggleButton value="decimal" aria-label="decimal representation">
+                decimal
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+          <form onSubmit={onSubmit}>
+            <Button type="submit" variant="contained" fullWidth>
+              Calculate
+            </Button>
+            <Typography variant="h6" mt="16px">
+              General
+            </Typography>
+            <Controller
+              control={control}
+              name="config.epochs"
+              rules={{ required: true, min: 1 }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} fullWidth>
+                  <FormLabel>Epochs</FormLabel>
+                  <OutlinedInput size="small" type="number" {...field} />
+                </FormControl>
+              )}
+            />
+            <Controller
+              control={control}
+              name="config.amount"
+              rules={{ required: true, min: 4 }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormLabel>Population size</FormLabel>
+                  <OutlinedInput {...field} size="small" type="number" />
+                </FormControl>
+              )}
+            />
+            <Box display="flex" gap="16px">
+              <Controller
+                control={control}
+                name="config.left_limit"
+                rules={{ required: true }}
+                render={({ field, fieldState }) => (
+                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                    <FormLabel>Left limit</FormLabel>
+                    <OutlinedInput {...field} size="small" type="number" />
+                  </FormControl>
+                )}
+              />
+              <Controller
+                control={control}
+                name="config.right_limit"
+                rules={{ required: true }}
+                render={({ field, fieldState }) => (
+                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                    <FormLabel>Right limit</FormLabel>
+                    <OutlinedInput {...field} size="small" type="number" />
+                  </FormControl>
+                )}
+              />
+            </Box>
+            <Controller
+              control={control}
+              name="config.precision"
+              rules={{ required: true, min: 1 }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormLabel>Precision</FormLabel>
+                  <OutlinedInput {...field} size="small" type="number" />
+                </FormControl>
+              )}
+            />
+            <Box display="flex" gap="16px" alignItems="flex-end">
+              <Controller
+                control={control}
+                name="config.fitness"
+                rules={{ required: true }}
+                render={({ field, fieldState }) => (
+                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                    <FormLabel>Fitness function</FormLabel>
+                    <Select {...field} size="small">
+                      <MenuItem value="SCHAFFER_N4">Schaffer N4</MenuItem>
+                    </Select>
+                  </FormControl>
+                )}
+              />
+              <Controller
+                control={control}
+                name="config.type"
+                rules={{ required: true }}
+                render={({ field, fieldState }) => (
+                  <FormControl
+                    margin="normal"
+                    error={!!fieldState.error}
+                    sx={{ minWidth: 'max-content' }}
+                  >
+                    <ToggleButtonGroup size="small" color="primary" exclusive {...field}>
+                      <ToggleButton value="min">min</ToggleButton>
+                      <ToggleButton value="max">max</ToggleButton>
+                    </ToggleButtonGroup>
+                  </FormControl>
+                )}
+              />
+            </Box>
+            <Typography variant="h6" mt="16px">
+              Selection
+            </Typography>
+            <Controller
+              control={control}
+              name="selection_config.type"
+              rules={{ required: true }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
+                  <FormLabel>Type</FormLabel>
+                  <Select {...field} size="small">
+                    <MenuItem value="THE_BEST">The Best</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+            <Box display="flex" gap="16px">
+              <Controller
+                control={control}
+                name="selection_config.percentage"
+                rules={{ required: true, min: 0, max: 100 }}
+                render={({ field, fieldState }) => (
+                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                    <FormLabel>Percentage</FormLabel>
+                    <OutlinedInput {...field} size="small" type="number" />
+                  </FormControl>
+                )}
+              />
+              <Controller
+                control={control}
+                name="selection_config.group_size"
+                rules={{ min: 2 }}
+                render={({ field, fieldState }) => (
+                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                    <FormLabel>Group size</FormLabel>
+                    <OutlinedInput {...field} size="small" type="number" />
+                  </FormControl>
+                )}
+              />
+            </Box>
+            <Typography variant="h6" mt="16px">
+              Crossover
+            </Typography>
+            <Controller
+              control={control}
+              name="crossover_config.type"
+              rules={{ required: true }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
+                  <FormLabel>Type</FormLabel>
+                  <Select {...field} size="small">
+                    <MenuItem value="HOMOGENEOUS">HOMOGENEOUS</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+            <Controller
+              control={control}
+              name="crossover_config.probability"
+              rules={{ required: true, min: 0, max: 100 }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormLabel>Probability</FormLabel>
+                  <OutlinedInput {...field} size="small" type="number" />
+                </FormControl>
+              )}
+            />
+            <Typography variant="h6" mt="16px">
+              Mutation
+            </Typography>
+            <Controller
+              control={control}
+              name="mutation_config.type"
+              rules={{ required: true }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
+                  <FormLabel>Type</FormLabel>
+                  <Select {...field} size="small">
+                    <MenuItem value="EDGE">EDGE</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+            <Controller
+              control={control}
+              name="mutation_config.probability"
+              rules={{ required: true, min: 0, max: 100 }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormLabel>Probability</FormLabel>
+                  <OutlinedInput {...field} size="small" type="number" />
+                </FormControl>
+              )}
+            />
+            <Typography variant="h6" mt="16px">
+              Inversion
+            </Typography>
+            <Controller
+              control={control}
+              name="inversion_config.probability"
+              rules={{ required: true, min: 0, max: 100 }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormLabel>Probability</FormLabel>
+                  <OutlinedInput {...field} size="small" type="number" />
+                </FormControl>
+              )}
+            />
+          </form>
         </div>
         <Container style={{ flexGrow: 1 }}>
           <Typography variant="h4">Title</Typography>
@@ -58,10 +373,10 @@ export default function Home() {
             play the role of individuals in a population, and the fitness function determines the
             quality of the solutions. Evolution of the population then takes place after the
             repeated application of the above operators.
-            <Box mt="8px">
-              For full description, see{' '}
-              <Link href="https://en.wikipedia.org/wiki/Evolutionary_algorithm">wikipedia</Link>
-            </Box>
+            <br />
+            <br />
+            For full description, see{' '}
+            <Link href="https://en.wikipedia.org/wiki/Evolutionary_algorithm">wikipedia</Link>
           </Typography>
           <Typography variant="h5" mb="16px">
             Implementation
