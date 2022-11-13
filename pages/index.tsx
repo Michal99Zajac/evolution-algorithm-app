@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
   Button,
+  Paper,
 } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Head from 'next/head'
@@ -22,7 +23,17 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import axios from 'axios'
 import produce from 'immer'
-import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+} from 'recharts'
+import PercentIcon from '@mui/icons-material/Percent'
 
 import classes from '@/styles/root.module.css'
 import { API_URL } from '@/config/env'
@@ -264,7 +275,12 @@ export default function Home() {
                 render={({ field, fieldState }) => (
                   <FormControl error={!!fieldState.error} margin="normal" fullWidth>
                     <FormLabel>Percentage</FormLabel>
-                    <OutlinedInput {...field} size="small" type="number" />
+                    <OutlinedInput
+                      startAdornment={<Box mr="4px">%</Box>}
+                      {...field}
+                      size="small"
+                      type="number"
+                    />
                   </FormControl>
                 )}
               />
@@ -306,7 +322,12 @@ export default function Home() {
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error} margin="normal" fullWidth>
                   <FormLabel>Probability</FormLabel>
-                  <OutlinedInput {...field} size="small" type="number" />
+                  <OutlinedInput
+                    startAdornment={<Box mr="4px">%</Box>}
+                    {...field}
+                    size="small"
+                    type="number"
+                  />
                 </FormControl>
               )}
             />
@@ -335,7 +356,12 @@ export default function Home() {
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error} margin="normal" fullWidth>
                   <FormLabel>Probability</FormLabel>
-                  <OutlinedInput {...field} size="small" type="number" />
+                  <OutlinedInput
+                    startAdornment={<Box mr="4px">%</Box>}
+                    {...field}
+                    size="small"
+                    type="number"
+                  />
                 </FormControl>
               )}
             />
@@ -349,7 +375,12 @@ export default function Home() {
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error} margin="normal" fullWidth>
                   <FormLabel>Probability</FormLabel>
-                  <OutlinedInput {...field} size="small" type="number" />
+                  <OutlinedInput
+                    startAdornment={<Box mr="4px">%</Box>}
+                    {...field}
+                    size="small"
+                    type="number"
+                  />
                 </FormControl>
               )}
             />
@@ -363,31 +394,38 @@ export default function Home() {
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error} margin="normal" fullWidth>
                   <FormLabel>Percentage</FormLabel>
-                  <OutlinedInput {...field} size="small" type="number" />
+                  <OutlinedInput
+                    startAdornment={<Box mr="4px">%</Box>}
+                    {...field}
+                    size="small"
+                    type="number"
+                  />
                 </FormControl>
               )}
             />
           </form>
         </div>
-        <Container
-          sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          {data && (
-            <LineChart
-              width={900}
-              height={400}
-              data={data}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="epoch" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="value" stroke="#1976d2" />
-              <Line type="monotone" dataKey="avg" stroke="#dd124f" />
-            </LineChart>
-          )}
+        <Container sx={{ flexGrow: 1, paddingY: '32px', height: '100vh', overflow: 'auto' }}>
+          <Paper variant="outlined" sx={{ padding: '32px' }}>
+            <Box height="400px">
+              {data && (
+                <ResponsiveContainer>
+                  <LineChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis label={{ value: 'epoch' }} height={80} dataKey="epoch" />
+                    <YAxis
+                      domain={[0, 1]}
+                      label={{ value: 'f(x*)', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip />
+                    <Legend verticalAlign="top" height={40} />
+                    <Line type="monotone" dataKey="value" stroke="#1976d2" />
+                    <Line type="monotone" dataKey="avg" stroke="#dd124f" />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </Box>
+          </Paper>
         </Container>
       </div>
       <Modal

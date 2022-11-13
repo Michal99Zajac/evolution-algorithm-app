@@ -2,7 +2,6 @@
   width: 600px;
   min-width: 600px;
   height: 100vh;
-  position: sticky;
   overflow: auto;
   overflow-y: overlay;
   border-right: 1px solid #cccccc;
