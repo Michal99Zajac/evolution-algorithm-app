@@ -15,6 +15,7 @@ import {
   MenuItem,
   Button,
   Paper,
+  Grid,
 } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Head from 'next/head'
@@ -33,7 +34,10 @@ import {
   YAxis,
   ResponsiveContainer,
 } from 'recharts'
-import PercentIcon from '@mui/icons-material/Percent'
+import AutoGraphRoundedIcon from '@mui/icons-material/AutoGraphRounded'
+import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded'
+import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
+import ArchitectureRoundedIcon from '@mui/icons-material/ArchitectureRounded'
 
 import classes from '@/styles/root.module.css'
 import { API_URL } from '@/config/env'
@@ -72,7 +76,7 @@ interface BinaryForm {
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
   const [representation, setRepresentation] = useState<'decimal' | 'binary'>('binary')
-  const [data, setData] = useState<any[] | null>(null)
+  const [data, setData] = useState<any | null>(null)
   const { control, handleSubmit } = useForm<BinaryForm>({
     defaultValues: {
       config: {
@@ -407,10 +411,10 @@ export default function Home() {
         </div>
         <Container sx={{ flexGrow: 1, paddingY: '32px', height: '100vh', overflow: 'auto' }}>
           <Paper variant="outlined" sx={{ padding: '32px' }}>
-            <Box height="400px">
-              {data && (
+            <Box height="400px" display="flex" alignItems="center" justifyContent="center">
+              {data ? (
                 <ResponsiveContainer>
-                  <LineChart data={data}>
+                  <LineChart data={data.evolution}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis label={{ value: 'epoch' }} height={80} dataKey="epoch" />
                     <YAxis
@@ -423,8 +427,44 @@ export default function Home() {
                     <Line type="monotone" dataKey="avg" stroke="#dd124f" />
                   </LineChart>
                 </ResponsiveContainer>
+              ) : (
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <AutoGraphRoundedIcon sx={{ fontSize: '60px' }} />
+                  <Typography mb="8px">No data here</Typography>
+                  <Button variant="contained" onClick={onSubmit}>
+                    Calculate
+                  </Button>
+                </Box>
               )}
             </Box>
+            <Grid container spacing={2}>
+              <Grid xs={4} item>
+                <Box display="flex" gap="8px" alignItems="center">
+                  <AccessTimeRoundedIcon /> {data ? data.time + 's' : '-'}
+                </Box>
+              </Grid>
+              <Grid xs={4} item>
+                <Box display="flex" gap="8px" alignItems="center">
+                  <AssessmentRoundedIcon /> {data ? data.best.value : '-'}
+                </Box>
+              </Grid>
+              <Grid xs={4} item>
+                <Box display="flex" gap="8px" alignItems="flex-start">
+                  <ArchitectureRoundedIcon />
+                  {data ? (
+                    <Box display="flex" flexDirection="column" gap="4px">
+                      {data.best.xx.map((x: any, index: number) => (
+                        <Typography key={x}>
+                          <b>x{index + 1}</b> {x}
+                        </Typography>
+                      ))}
+                    </Box>
+                  ) : (
+                    '-'
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
           </Paper>
         </Container>
       </div>
