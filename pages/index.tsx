@@ -17,6 +17,12 @@ import {
   Paper,
   Grid,
   CircularProgress,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Head from 'next/head'
@@ -113,6 +119,9 @@ export default function Home() {
   })
 
   const onSubmit = handleSubmit(async (rawData) => {
+    setData(null)
+    setIsLoading(true)
+
     // change values to float
     const data = produce(rawData, (draft) => {
       draft.crossover_config.probability = draft.crossover_config.probability / 100
@@ -123,7 +132,6 @@ export default function Home() {
     })
 
     try {
-      setIsLoading(true)
       const response = await axios.post(API_URL + '/api/bin', data)
       setData(response.data)
     } catch (error) {
@@ -492,7 +500,7 @@ export default function Home() {
           </form>
         </div>
         <Container sx={{ flexGrow: 1, paddingY: '32px', height: '100vh', overflow: 'auto' }}>
-          <Paper variant="outlined" sx={{ padding: '32px' }}>
+          <Paper variant="outlined" sx={{ padding: '32px', mb: '16px' }}>
             <Box height="400px" display="flex" alignItems="center" justifyContent="center">
               {data && !isLoading && (
                 <ResponsiveContainer>
@@ -550,6 +558,30 @@ export default function Home() {
               </Grid>
             </Grid>
           </Paper>
+          <TableContainer sx={{ maxHeight: 600 }} variant="outlined" component={Paper}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Epoch</TableCell>
+                  <TableCell align="right">Value</TableCell>
+                  <TableCell align="right">Avarage</TableCell>
+                  <TableCell align="right">x1</TableCell>
+                  <TableCell align="right">x2</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data?.evolution.map((row: any) => (
+                  <TableRow key={row.epoch}>
+                    <TableCell>{row.epoch}</TableCell>
+                    <TableCell align="right">{row.value}</TableCell>
+                    <TableCell align="right">{row.avg}</TableCell>
+                    <TableCell align="right">{row.x[0]}</TableCell>
+                    <TableCell align="right">{row.x[1]}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Container>
       </div>
       <Modal
