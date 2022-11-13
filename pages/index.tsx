@@ -22,6 +22,7 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import axios from 'axios'
 import produce from 'immer'
+import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
 
 import classes from '@/styles/root.module.css'
 import { API_URL } from '@/config/env'
@@ -61,7 +62,7 @@ export default function Home() {
   const { control, handleSubmit } = useForm<BinaryForm>({
     defaultValues: {
       config: {
-        epochs: 1,
+        epochs: 50,
         left_limit: -10,
         right_limit: 10,
         amount: 100,
@@ -242,6 +243,8 @@ export default function Home() {
                   <FormLabel>Type</FormLabel>
                   <Select {...field} size="small">
                     <MenuItem value="THE_BEST">The Best</MenuItem>
+                    <MenuItem value="TOURNAMENT">Tournament</MenuItem>
+                    <MenuItem value="ROULETTE">Roulette</MenuItem>
                   </Select>
                 </FormControl>
               )}
@@ -281,7 +284,10 @@ export default function Home() {
                 <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
                   <FormLabel>Type</FormLabel>
                   <Select {...field} size="small">
-                    <MenuItem value="HOMOGENEOUS">HOMOGENEOUS</MenuItem>
+                    <MenuItem value="HOMOGENEOUS">Homogeneous</MenuItem>
+                    <MenuItem value="ONE_POINT">One Point</MenuItem>
+                    <MenuItem value="TWO_POINT">Two Point</MenuItem>
+                    <MenuItem value="THREE_POINT">Three Point</MenuItem>
                   </Select>
                 </FormControl>
               )}
@@ -308,7 +314,9 @@ export default function Home() {
                 <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
                   <FormLabel>Type</FormLabel>
                   <Select {...field} size="small">
-                    <MenuItem value="EDGE">EDGE</MenuItem>
+                    <MenuItem value="EDGE">Edge</MenuItem>
+                    <MenuItem value="SINGLE">Single</MenuItem>
+                    <MenuItem value="TWO_POINT">Two Point</MenuItem>
                   </Select>
                 </FormControl>
               )}
@@ -340,9 +348,25 @@ export default function Home() {
             />
           </form>
         </div>
-        <Container style={{ flexGrow: 1 }}>
-          <Typography variant="h4">Title</Typography>
-          <p>{JSON.stringify(data)}</p>
+        <Container
+          sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {data && (
+            <LineChart
+              width={900}
+              height={400}
+              data={data}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="epoch" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="value" stroke="#1976d2" />
+              <Line type="monotone" dataKey="avg" stroke="#dd124f" />
+            </LineChart>
+          )}
         </Container>
       </div>
       <Modal
