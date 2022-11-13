@@ -1,6 +1,6 @@
 .drawer {
-  width: 600px;
-  min-width: 600px;
+  width: 500px;
+  min-width: 500px;
   height: 100vh;
   overflow: auto;
   overflow-y: overlay;
