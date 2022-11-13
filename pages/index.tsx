@@ -143,6 +143,9 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>OE - Michal Zajac</title>
+      </Head>
       <div style={{ display: 'flex' }}>
         <div className={classes.drawer}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb="16px">
