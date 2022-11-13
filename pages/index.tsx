@@ -53,6 +53,9 @@ interface BinaryForm {
   inversion_config: {
     probability: number
   }
+  elite_config: {
+    percentage: number
+  }
 }
 
 export default function Home() {
@@ -86,6 +89,9 @@ export default function Home() {
       inversion_config: {
         probability: 20,
       },
+      elite_config: {
+        percentage: 10,
+      },
     },
   })
 
@@ -96,6 +102,7 @@ export default function Home() {
       draft.inversion_config.probability = draft.inversion_config.probability / 100
       draft.selection_config.percentage = draft.selection_config.percentage / 100
       draft.mutation_config.probability = draft.mutation_config.probability / 100
+      draft.elite_config.percentage = draft.elite_config.percentage / 100
     })
 
     try {
@@ -342,6 +349,20 @@ export default function Home() {
               render={({ field, fieldState }) => (
                 <FormControl error={!!fieldState.error} margin="normal" fullWidth>
                   <FormLabel>Probability</FormLabel>
+                  <OutlinedInput {...field} size="small" type="number" />
+                </FormControl>
+              )}
+            />
+            <Typography variant="h6" mt="16px">
+              Elite Strategy
+            </Typography>
+            <Controller
+              control={control}
+              name="elite_config.percentage"
+              rules={{ required: true, min: 0, max: 100 }}
+              render={({ field, fieldState }) => (
+                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormLabel>Percentage</FormLabel>
                   <OutlinedInput {...field} size="small" type="number" />
                 </FormControl>
               )}
