@@ -20,9 +20,11 @@ import Head from 'next/head'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import axios from 'axios'
+import produce from 'immer'
 
 import classes from '@/styles/root.module.css'
-import produce from 'immer'
+import { API_URL } from '@/config/env'
 
 interface BinaryForm {
   config: {
@@ -55,6 +57,7 @@ interface BinaryForm {
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
   const [representation, setRepresentation] = useState<'decimal' | 'binary'>('binary')
+  const [data, setData] = useState<any[] | null>(null)
   const { control, handleSubmit } = useForm<BinaryForm>({
     defaultValues: {
       config: {
@@ -86,19 +89,17 @@ export default function Home() {
   })
 
   const onSubmit = handleSubmit(async (rawData) => {
+    // change values to float
     const data = produce(rawData, (draft) => {
       draft.crossover_config.probability = draft.crossover_config.probability / 100
       draft.inversion_config.probability = draft.inversion_config.probability / 100
       draft.selection_config.percentage = draft.selection_config.percentage / 100
+      draft.mutation_config.probability = draft.mutation_config.probability / 100
     })
 
     try {
-      const response = await fetch('https://evolution-algorithm-azefgwr5tq-lz.a.run.app/api/bin', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
-      console.log(json)
+      const response = await axios.post(API_URL, data)
+      setData(response.data)
     } catch (error) {
       console.log(error)
     }
