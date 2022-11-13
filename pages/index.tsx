@@ -16,6 +16,7 @@ import {
   Button,
   Paper,
   Grid,
+  CircularProgress,
 } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Head from 'next/head'
@@ -77,6 +78,7 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
   const [representation, setRepresentation] = useState<'decimal' | 'binary'>('binary')
   const [data, setData] = useState<any | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const { control, handleSubmit } = useForm<BinaryForm>({
     defaultValues: {
       config: {
@@ -121,11 +123,14 @@ export default function Home() {
     })
 
     try {
+      setIsLoading(true)
       const response = await axios.post(API_URL + '/api/bin', data)
       setData(response.data)
     } catch (error) {
       console.log(error)
     }
+
+    setIsLoading(false)
   })
 
   return (
@@ -158,7 +163,7 @@ export default function Home() {
             </ToggleButtonGroup>
           </Box>
           <form onSubmit={onSubmit}>
-            <Button type="submit" variant="contained" fullWidth>
+            <Button type="submit" disabled={isLoading} variant="contained" fullWidth>
               Calculate
             </Button>
             <Typography variant="h6" mt="16px">
@@ -169,7 +174,7 @@ export default function Home() {
               name="config.epochs"
               rules={{ required: true, min: 1 }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} fullWidth>
+                <FormControl disabled={isLoading} error={!!fieldState.error} fullWidth>
                   <FormLabel>Epochs</FormLabel>
                   <OutlinedInput size="small" type="number" {...field} />
                 </FormControl>
@@ -180,7 +185,12 @@ export default function Home() {
               name="config.amount"
               rules={{ required: true, min: 4 }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  margin="normal"
+                  fullWidth
+                >
                   <FormLabel>Population size</FormLabel>
                   <OutlinedInput {...field} size="small" type="number" />
                 </FormControl>
@@ -192,7 +202,12 @@ export default function Home() {
                 name="config.left_limit"
                 rules={{ required: true }}
                 render={({ field, fieldState }) => (
-                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormControl
+                    disabled={isLoading}
+                    error={!!fieldState.error}
+                    margin="normal"
+                    fullWidth
+                  >
                     <FormLabel>Left limit</FormLabel>
                     <OutlinedInput {...field} size="small" type="number" />
                   </FormControl>
@@ -203,7 +218,12 @@ export default function Home() {
                 name="config.right_limit"
                 rules={{ required: true }}
                 render={({ field, fieldState }) => (
-                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormControl
+                    disabled={isLoading}
+                    error={!!fieldState.error}
+                    margin="normal"
+                    fullWidth
+                  >
                     <FormLabel>Right limit</FormLabel>
                     <OutlinedInput {...field} size="small" type="number" />
                   </FormControl>
@@ -215,7 +235,12 @@ export default function Home() {
               name="config.precision"
               rules={{ required: true, min: 1 }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  margin="normal"
+                  fullWidth
+                >
                   <FormLabel>Precision</FormLabel>
                   <OutlinedInput {...field} size="small" type="number" />
                 </FormControl>
@@ -227,7 +252,12 @@ export default function Home() {
                 name="config.fitness"
                 rules={{ required: true }}
                 render={({ field, fieldState }) => (
-                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormControl
+                    disabled={isLoading}
+                    error={!!fieldState.error}
+                    margin="normal"
+                    fullWidth
+                  >
                     <FormLabel>Fitness function</FormLabel>
                     <Select {...field} size="small">
                       <MenuItem value="SCHAFFER_N4">Schaffer N4</MenuItem>
@@ -241,11 +271,18 @@ export default function Home() {
                 rules={{ required: true }}
                 render={({ field, fieldState }) => (
                   <FormControl
+                    disabled={isLoading}
                     margin="normal"
                     error={!!fieldState.error}
                     sx={{ minWidth: 'max-content' }}
                   >
-                    <ToggleButtonGroup size="small" color="primary" exclusive {...field}>
+                    <ToggleButtonGroup
+                      disabled={isLoading}
+                      size="small"
+                      color="primary"
+                      exclusive
+                      {...field}
+                    >
                       <ToggleButton value="min">min</ToggleButton>
                       <ToggleButton value="max">max</ToggleButton>
                     </ToggleButtonGroup>
@@ -261,7 +298,12 @@ export default function Home() {
               name="selection_config.type"
               rules={{ required: true }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  fullWidth
+                  sx={{ marginBottom: '16px' }}
+                >
                   <FormLabel>Type</FormLabel>
                   <Select {...field} size="small">
                     <MenuItem value="THE_BEST">The Best</MenuItem>
@@ -277,7 +319,12 @@ export default function Home() {
                 name="selection_config.percentage"
                 rules={{ required: true, min: 0, max: 100 }}
                 render={({ field, fieldState }) => (
-                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormControl
+                    disabled={isLoading}
+                    error={!!fieldState.error}
+                    margin="normal"
+                    fullWidth
+                  >
                     <FormLabel>Percentage</FormLabel>
                     <OutlinedInput
                       startAdornment={<Box mr="4px">%</Box>}
@@ -293,7 +340,12 @@ export default function Home() {
                 name="selection_config.group_size"
                 rules={{ min: 2 }}
                 render={({ field, fieldState }) => (
-                  <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                  <FormControl
+                    disabled={isLoading}
+                    error={!!fieldState.error}
+                    margin="normal"
+                    fullWidth
+                  >
                     <FormLabel>Group size</FormLabel>
                     <OutlinedInput {...field} size="small" type="number" />
                   </FormControl>
@@ -308,7 +360,12 @@ export default function Home() {
               name="crossover_config.type"
               rules={{ required: true }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  fullWidth
+                  sx={{ marginBottom: '16px' }}
+                >
                   <FormLabel>Type</FormLabel>
                   <Select {...field} size="small">
                     <MenuItem value="HOMOGENEOUS">Homogeneous</MenuItem>
@@ -324,7 +381,12 @@ export default function Home() {
               name="crossover_config.probability"
               rules={{ required: true, min: 0, max: 100 }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  margin="normal"
+                  fullWidth
+                >
                   <FormLabel>Probability</FormLabel>
                   <OutlinedInput
                     startAdornment={<Box mr="4px">%</Box>}
@@ -343,7 +405,12 @@ export default function Home() {
               name="mutation_config.type"
               rules={{ required: true }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} fullWidth sx={{ marginBottom: '16px' }}>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  fullWidth
+                  sx={{ marginBottom: '16px' }}
+                >
                   <FormLabel>Type</FormLabel>
                   <Select {...field} size="small">
                     <MenuItem value="EDGE">Edge</MenuItem>
@@ -358,7 +425,12 @@ export default function Home() {
               name="mutation_config.probability"
               rules={{ required: true, min: 0, max: 100 }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  margin="normal"
+                  fullWidth
+                >
                   <FormLabel>Probability</FormLabel>
                   <OutlinedInput
                     startAdornment={<Box mr="4px">%</Box>}
@@ -377,7 +449,12 @@ export default function Home() {
               name="inversion_config.probability"
               rules={{ required: true, min: 0, max: 100 }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  margin="normal"
+                  fullWidth
+                >
                   <FormLabel>Probability</FormLabel>
                   <OutlinedInput
                     startAdornment={<Box mr="4px">%</Box>}
@@ -396,7 +473,12 @@ export default function Home() {
               name="elite_config.percentage"
               rules={{ required: true, min: 0, max: 100 }}
               render={({ field, fieldState }) => (
-                <FormControl error={!!fieldState.error} margin="normal" fullWidth>
+                <FormControl
+                  disabled={isLoading}
+                  error={!!fieldState.error}
+                  margin="normal"
+                  fullWidth
+                >
                   <FormLabel>Percentage</FormLabel>
                   <OutlinedInput
                     startAdornment={<Box mr="4px">%</Box>}
@@ -412,7 +494,7 @@ export default function Home() {
         <Container sx={{ flexGrow: 1, paddingY: '32px', height: '100vh', overflow: 'auto' }}>
           <Paper variant="outlined" sx={{ padding: '32px' }}>
             <Box height="400px" display="flex" alignItems="center" justifyContent="center">
-              {data ? (
+              {data && !isLoading && (
                 <ResponsiveContainer>
                   <LineChart data={data.evolution}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -427,7 +509,8 @@ export default function Home() {
                     <Line type="monotone" dataKey="avg" stroke="#dd124f" />
                   </LineChart>
                 </ResponsiveContainer>
-              ) : (
+              )}
+              {!data && !isLoading && (
                 <Box display="flex" flexDirection="column" alignItems="center">
                   <AutoGraphRoundedIcon sx={{ fontSize: '60px' }} />
                   <Typography mb="8px">No data here</Typography>
@@ -436,6 +519,7 @@ export default function Home() {
                   </Button>
                 </Box>
               )}
+              {isLoading && <CircularProgress />}
             </Box>
             <Grid container spacing={2}>
               <Grid xs={4} item>
