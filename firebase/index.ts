@@ -1,9 +1,11 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 
+import { FIREBASE_API_KEY } from '@/config/env'
+
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyBdPvsXfi_ktw8MeHZUoMwpQo58yplk4tM',
+  apiKey: FIREBASE_API_KEY,
   authDomain: 'evolution-algorithm-oe.firebaseapp.com',
   projectId: 'evolution-algorithm-oe',
   storageBucket: 'evolution-algorithm-oe.appspot.com',
