@@ -93,7 +93,7 @@ export default function Home() {
         <Container sx={{ flexGrow: 1, paddingY: '32px', height: '100vh', overflow: 'auto' }}>
           <Paper variant="outlined" sx={{ padding: '32px', mb: '16px' }}>
             <Box height="400px" display="flex" alignItems="center" justifyContent="center">
-              {data && !binaryForm.isLoading && (
+              {data && !binaryForm.isLoading && !decimalForm.isLoading && (
                 <ResponsiveContainer>
                   <LineChart data={data.evolution}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -109,7 +109,7 @@ export default function Home() {
                   </LineChart>
                 </ResponsiveContainer>
               )}
-              {!data && !binaryForm.isLoading && (
+              {!data && !binaryForm.isLoading && !decimalForm.isLoading && (
                 <Box display="flex" flexDirection="column" alignItems="center">
                   <AutoGraphRoundedIcon sx={{ fontSize: '60px' }} />
                   <Typography mb="8px">No data here</Typography>
@@ -118,7 +118,7 @@ export default function Home() {
                   </Button>
                 </Box>
               )}
-              {binaryForm.isLoading && <CircularProgress />}
+              {(binaryForm.isLoading || decimalForm.isLoading) && <CircularProgress />}
             </Box>
             <Grid container spacing={2}>
               <Grid xs={4} item>
