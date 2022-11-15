@@ -51,18 +51,19 @@ import { API_URL } from '@/config/env'
 import { EAModal } from '@/components/EAModal'
 import { BinaryForm } from '@/components/BinaryForm'
 import { defaultValues, BinaryForm as TBinaryForm } from '@/components/BinaryForm/form'
+import { ResultTable } from '@/components/ResultTable'
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
   const [representation, setRepresentation] = useState<'decimal' | 'binary'>('binary')
-  const [data, setData] = useState<any | null>(null)
+  const [data, setData] = useState<any | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const binaryForm = useForm<TBinaryForm>({
     defaultValues: defaultValues,
   })
 
   const onSubmit = binaryForm.handleSubmit(async (rawData) => {
-    setData(null)
+    setData(undefined)
     setIsLoading(true)
 
     // change values to float
@@ -181,30 +182,7 @@ export default function Home() {
               </Grid>
             </Grid>
           </Paper>
-          <TableContainer sx={{ maxHeight: 600 }} variant="outlined" component={Paper}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Epoch</TableCell>
-                  <TableCell align="right">Value</TableCell>
-                  <TableCell align="right">Avarage</TableCell>
-                  <TableCell align="right">x1</TableCell>
-                  <TableCell align="right">x2</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data?.evolution.map((row: any) => (
-                  <TableRow key={row.epoch}>
-                    <TableCell>{row.epoch}</TableCell>
-                    <TableCell align="right">{row.value}</TableCell>
-                    <TableCell align="right">{row.avg}</TableCell>
-                    <TableCell align="right">{row.x[0]}</TableCell>
-                    <TableCell align="right">{row.x[1]}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <ResultTable evolution={data?.evolution} />
         </Container>
       </div>
       <EAModal isOpen={isOpen} setIsOpen={setIsOpen} />
