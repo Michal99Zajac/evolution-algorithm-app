@@ -2,9 +2,11 @@ import produce from 'immer'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
+import { addDoc, collection } from 'firebase/firestore'
 
 import { API_URL } from '@/config/env'
 import { defaultValues, DecimalForm as TDecimalForm } from '@/components/DecimalForm/form'
+import { db } from '@/firebase'
 
 export const useDecimalForm = (setData: (data: any) => void) => {
   const { handleSubmit, ...form } = useForm<TDecimalForm>({
@@ -15,6 +17,7 @@ export const useDecimalForm = (setData: (data: any) => void) => {
   const onSubmit = handleSubmit(async (rawData) => {
     setData(undefined)
     setIsLoading(true)
+    let response = null
 
     // change values to float
     const data = produce(rawData, (draft) => {
@@ -25,13 +28,21 @@ export const useDecimalForm = (setData: (data: any) => void) => {
     })
 
     try {
-      const response = await axios.post(API_URL + '/api/decimal', data)
+      response = await axios.post(API_URL + '/api/decimal', data)
       setData(response.data)
     } catch (error) {
       console.log(error)
     }
 
     setIsLoading(false)
+
+    if (!response) return
+
+    // save to database
+    await addDoc(collection(db, 'decimal'), {
+      configuration: data,
+      result: response.data,
+    })
   })
 
   return { ...form, onSubmit, isLoading }
