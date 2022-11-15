@@ -32,14 +32,17 @@ import ArchitectureRoundedIcon from '@mui/icons-material/ArchitectureRounded'
 import classes from '@/styles/root.module.css'
 import { EAModal } from '@/components/EAModal'
 import { BinaryForm } from '@/components/BinaryForm'
+import { DecimalForm } from '@/components/DecimalForm'
 import { ResultTable } from '@/components/ResultTable'
 import useBinaryForm from '@/api/useBinaryForm'
+import useDecimalForm from '@/api/useDecimalForm'
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
   const [representation, setRepresentation] = useState<'decimal' | 'binary'>('binary')
   const [data, setData] = useState<any | undefined>(undefined)
   const binaryForm = useBinaryForm(setData)
+  const decimalForm = useDecimalForm(setData)
 
   return (
     <>
@@ -80,7 +83,11 @@ export default function Home() {
               control={binaryForm.control}
             />
           ) : (
-            <div />
+            <DecimalForm
+              isLoading={decimalForm.isLoading}
+              onSubmit={decimalForm.onSubmit}
+              control={decimalForm.control}
+            />
           )}
         </div>
         <Container sx={{ flexGrow: 1, paddingY: '32px', height: '100vh', overflow: 'auto' }}>
