@@ -3,34 +3,17 @@ import {
   Container,
   Box,
   IconButton,
-  Modal,
-  Card,
-  Link,
   ToggleButtonGroup,
   ToggleButton,
-  FormControl,
-  FormLabel,
-  OutlinedInput,
-  Select,
-  MenuItem,
   Button,
   Paper,
   Grid,
   CircularProgress,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
 } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import Head from 'next/head'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import axios from 'axios'
-import produce from 'immer'
 import {
   CartesianGrid,
   Legend,
@@ -47,43 +30,16 @@ import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import ArchitectureRoundedIcon from '@mui/icons-material/ArchitectureRounded'
 
 import classes from '@/styles/root.module.css'
-import { API_URL } from '@/config/env'
 import { EAModal } from '@/components/EAModal'
 import { BinaryForm } from '@/components/BinaryForm'
-import { defaultValues, BinaryForm as TBinaryForm } from '@/components/BinaryForm/form'
 import { ResultTable } from '@/components/ResultTable'
+import useBinaryForm from '@/api/useBinaryForm'
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
   const [representation, setRepresentation] = useState<'decimal' | 'binary'>('binary')
   const [data, setData] = useState<any | undefined>(undefined)
-  const [isLoading, setIsLoading] = useState(false)
-  const binaryForm = useForm<TBinaryForm>({
-    defaultValues: defaultValues,
-  })
-
-  const onSubmit = binaryForm.handleSubmit(async (rawData) => {
-    setData(undefined)
-    setIsLoading(true)
-
-    // change values to float
-    const data = produce(rawData, (draft) => {
-      draft.crossover_config.probability = draft.crossover_config.probability / 100
-      draft.inversion_config.probability = draft.inversion_config.probability / 100
-      draft.selection_config.percentage = draft.selection_config.percentage / 100
-      draft.mutation_config.probability = draft.mutation_config.probability / 100
-      draft.elite_config.percentage = draft.elite_config.percentage / 100
-    })
-
-    try {
-      const response = await axios.post(API_URL + '/api/bin', data)
-      setData(response.data)
-    } catch (error) {
-      console.log(error)
-    }
-
-    setIsLoading(false)
-  })
+  const binaryForm = useBinaryForm(setData)
 
   return (
     <>
@@ -118,7 +74,11 @@ export default function Home() {
             </ToggleButtonGroup>
           </Box>
           {representation == 'binary' ? (
-            <BinaryForm isLoading={isLoading} onSubmit={onSubmit} control={binaryForm.control} />
+            <BinaryForm
+              isLoading={binaryForm.isLoading}
+              onSubmit={binaryForm.onSubmit}
+              control={binaryForm.control}
+            />
           ) : (
             <div />
           )}
@@ -126,7 +86,7 @@ export default function Home() {
         <Container sx={{ flexGrow: 1, paddingY: '32px', height: '100vh', overflow: 'auto' }}>
           <Paper variant="outlined" sx={{ padding: '32px', mb: '16px' }}>
             <Box height="400px" display="flex" alignItems="center" justifyContent="center">
-              {data && !isLoading && (
+              {data && !binaryForm.isLoading && (
                 <ResponsiveContainer>
                   <LineChart data={data.evolution}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -142,16 +102,16 @@ export default function Home() {
                   </LineChart>
                 </ResponsiveContainer>
               )}
-              {!data && !isLoading && (
+              {!data && !binaryForm.isLoading && (
                 <Box display="flex" flexDirection="column" alignItems="center">
                   <AutoGraphRoundedIcon sx={{ fontSize: '60px' }} />
                   <Typography mb="8px">No data here</Typography>
-                  <Button variant="contained" onClick={onSubmit}>
+                  <Button variant="contained" onClick={binaryForm.onSubmit}>
                     Calculate
                   </Button>
                 </Box>
               )}
-              {isLoading && <CircularProgress />}
+              {binaryForm.isLoading && <CircularProgress />}
             </Box>
             <Grid container spacing={2}>
               <Grid xs={4} item>
