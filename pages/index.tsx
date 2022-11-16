@@ -136,7 +136,7 @@ export default function Home() {
                   <ArchitectureRoundedIcon />
                   {data ? (
                     <Box display="flex" flexDirection="column" gap="4px">
-                      {data.best.xx.map((x: any, index: number) => (
+                      {data.best.x.map((x: any, index: number) => (
                         <Typography key={x}>
                           <b>x{index + 1}</b> {x}
                         </Typography>
