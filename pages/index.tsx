@@ -105,7 +105,8 @@ export default function Home() {
                     <Tooltip />
                     <Legend verticalAlign="top" height={40} />
                     <Line type="monotone" dataKey="value" stroke="#1976d2" />
-                    <Line type="monotone" dataKey="avg" stroke="#dd124f" />
+                    <Line type="monotone" dataKey="average" stroke="#dd124f" />
+                    <Line type="monotone" dataKey="standard_deviation" stroke="#049f30" />
                   </LineChart>
                 </ResponsiveContainer>
               )}

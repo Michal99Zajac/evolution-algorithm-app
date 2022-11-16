@@ -12,7 +12,8 @@ interface Props {
   evolution?: {
     epoch: string | number
     value: string | number
-    avg: string | number
+    average: string | number
+    standard_deviation: string | number
     x: [string, string]
   }[]
 }
@@ -27,7 +28,8 @@ export function ResultTable(props: Props) {
           <TableRow>
             <TableCell>Epoch</TableCell>
             <TableCell align="right">Value</TableCell>
-            <TableCell align="right">Avarage</TableCell>
+            <TableCell align="right">Average</TableCell>
+            <TableCell align="right">Standard Deviation</TableCell>
             <TableCell align="right">x1</TableCell>
             <TableCell align="right">x2</TableCell>
           </TableRow>
@@ -37,7 +39,8 @@ export function ResultTable(props: Props) {
             <TableRow key={row.epoch}>
               <TableCell>{row.epoch}</TableCell>
               <TableCell align="right">{row.value}</TableCell>
-              <TableCell align="right">{row.avg}</TableCell>
+              <TableCell align="right">{row.average}</TableCell>
+              <TableCell align="right">{row.standard_deviation}</TableCell>
               <TableCell align="right">{row.x[0]}</TableCell>
               <TableCell align="right">{row.x[1]}</TableCell>
             </TableRow>
