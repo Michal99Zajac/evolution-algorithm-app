@@ -2,11 +2,9 @@ import produce from 'immer'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
-import { addDoc, collection } from 'firebase/firestore'
 
 import { API_URL } from '@/config/env'
 import { defaultValues, BinaryForm as TBinaryForm } from '@/components/BinaryForm/form'
-import { db } from '@/firebase'
 
 export const useBinaryForm = (setData: (data: any) => void) => {
   const { handleSubmit, ...form } = useForm<TBinaryForm>({
@@ -38,12 +36,6 @@ export const useBinaryForm = (setData: (data: any) => void) => {
     setIsLoading(false)
 
     if (!response) return
-
-    // save to database
-    await addDoc(collection(db, 'binary'), {
-      configuration: data,
-      result: response.data,
-    })
   })
 
   return { ...form, onSubmit, isLoading }
